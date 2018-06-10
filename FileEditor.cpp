@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <regex>
+#include <sys/stat.h>
+#include <climits>
 
 using namespace std;
 
@@ -12,12 +14,9 @@ FileEditor::~FileEditor(){}
 void FileEditor::mainMenu()
 {
     string selection;
-    bool valid;
     regex range("[0-6]");
 
     do{
-        valid = true;
-
         cout << "**Multi-Processing File Editor**\n\n";
         cout << "Please choose an option below:\n";
         cout << "1. Create a directory file\n";
@@ -31,17 +30,14 @@ void FileEditor::mainMenu()
         getline(cin, selection);
 
         if(!regex_match(selection, range))
-        {
             cout << "Please enter a valid selection\n\n";
-            valid = false;
-        }
         else if(selection == "0")
         {
             cout << "Exiting program...\n";
             return;
         }
         else if(selection == "1")
-            cout << "1 selected\n";
+            createDir();
         else if(selection == "2")
             cout << "2 selected\n";
         else if(selection == "3")
@@ -53,8 +49,33 @@ void FileEditor::mainMenu()
         else if(selection == "6")
             cout << "6 selected\n";
       }
-    while(!valid);
-         
+    while(true);    
 }
 
+void FileEditor::createDir()
+{
+    cout << "Enter name of new directory\n";
+
+    string root = "/home/cody/Desktop/CS570_a2/";
+    string newDir;
+    cin >> newDir;
+    cin.ignore(INT_MAX, '\n');      // flush out cin buffer
+
+    if(newDir == "0")       // input is 0, return to main menu
+    {
+        cout << "\n";
+        return;
+    }
+
+    string path = root + newDir;
+    int test = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+
+    if(test == -1)
+    {
+        cout << "Directory already exists\n\n";  
+        createDir();
+    }
+    else
+        cout << "Directory created\n\n";     
+}
 
