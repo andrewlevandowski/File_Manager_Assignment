@@ -8,6 +8,7 @@ class FileEditor
         ~FileEditor();
         void mainMenu();
         void createDir();
+        void createFile();
 };
 
 

@@ -4,6 +4,7 @@
 #include <regex>
 #include <sys/stat.h>
 #include <climits>
+#include <fstream>
 
 using namespace std;
 
@@ -39,7 +40,7 @@ void FileEditor::mainMenu()
         else if(selection == "1")
             createDir();
         else if(selection == "2")
-            cout << "2 selected\n";
+            createFile();
         else if(selection == "3")
             cout << "3 selected\n";
         else if(selection == "4")
@@ -72,10 +73,36 @@ void FileEditor::createDir()
 
     if(test == -1)
     {
-        cout << "Directory already exists\n\n";  
+        cout << "Directory file already exists\n\n";  
         createDir();
     }
     else
-        cout << "Directory created\n\n";     
+        cout << "Directory file created\n\n";     
 }
+
+void FileEditor::createFile()
+{
+    cout << "Enter file name\n";
+
+    string fileName;
+    cin >> fileName;
+    cin.ignore(INT_MAX, '\n');      // flush out cin buffer
+
+    if(fileName == "0")       // input is 0, return to main menu
+    {
+        cout << "\n";
+        return;
+    }
+    
+    ofstream file (fileName);
+    file.close();
+    cout << "Regular file created\n\n";
+}
+
+    
+
+        
+
+
+
 
