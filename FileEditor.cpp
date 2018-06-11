@@ -1,7 +1,7 @@
 #include "FileEditor.hpp"
 #include <iostream>
 #include <string>
-#include <regex>
+//#include <regex>
 #include <sys/stat.h>
 #include <climits>
 #include <fstream>
@@ -15,7 +15,7 @@ FileEditor::~FileEditor(){}
 void FileEditor::mainMenu()
 {
     string selection;
-    regex range("[0-6]");
+    //regex range("[0-6]");
 
     do{
         cout << "**Multi-Processing File Editor**\n\n";
@@ -30,25 +30,35 @@ void FileEditor::mainMenu()
 
         getline(cin, selection);
 
-        if(!regex_match(selection, range))
-            cout << "Please enter a valid selection\n\n";
-        else if(selection == "0")
-        {
-            cout << "Exiting program...\n";
-            return;
+        //if(!regex_match(selection, range))
+            //cout << "Please enter a valid selection\n\n";
+        try{
+            int temp = stoi(selection);
+
+            if(temp < 0 || temp > 6)
+                cout << "Please enter a valid selection\n\n";
+            else if(selection == "0")
+            {
+                cout << "Exiting program...\n";
+                return;
+            }
+            else if(selection == "1")
+                createDir();
+            else if(selection == "2")
+                createFile();
+            else if(selection == "3")
+                cout << "3 selected\n";
+            else if(selection == "4")
+                cout << "4 selected\n";
+            else if(selection == "5")
+                cout << "5 selected\n";
+            else if(selection == "6")
+                cout << "6 selected\n";
         }
-        else if(selection == "1")
-            createDir();
-        else if(selection == "2")
-            createFile();
-        else if(selection == "3")
-            cout << "3 selected\n";
-        else if(selection == "4")
-            cout << "4 selected\n";
-        else if(selection == "5")
-            cout << "5 selected\n";
-        else if(selection == "6")
-            cout << "6 selected\n";
+        catch(const exception& e)
+        {
+            cout << "Please enter a valid selection\n\n";
+        }
       }
     while(true);    
 }
