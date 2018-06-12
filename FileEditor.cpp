@@ -124,7 +124,7 @@ void FileEditor::writeFile()
 
 	fclose(check);
 
-	cout << "Enter content to write to file (0 for main menu)\n";
+	cout << "Enter data to write to file (0 for main menu)\n";
 
 	string data;
 	getline(cin, data);
@@ -196,7 +196,7 @@ void FileEditor::writeFile()
 
 		    string test = "test test test";
 		
-			vector<string> testVec = {"test"};
+			vector<string> testVec = {"test\n"};
 			test = testVec[0];
 
 		    fputs(test.c_str(), insertFile);
@@ -206,10 +206,22 @@ void FileEditor::writeFile()
 		}
 		else if(mode == "2")	// append
 		{
+			ofstream appFile;
+		    appFile.open(fileName.c_str(), ios::app);
+			appFile << data << "\n";
+			appFile.close();
+	
+			cout << "Data appended to file\n\n";
 			return;
 		}
 		else if(mode == "3")	// overwrite
 		{
+			ofstream overFile;
+			overFile.open(fileName.c_str());
+			overFile << data << "\n";
+			overFile.close();
+			
+			cout << "Data overwritten to file\n\n";
 			return;
 		}
 		else
