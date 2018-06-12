@@ -9,6 +9,7 @@ class FileEditor
         void mainMenu();
         void createDir();
         void createFile();
+        void writeFile();
 };
 
 
