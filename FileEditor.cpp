@@ -150,65 +150,87 @@ void FileEditor::writeFile()
 			return;
 		else if(mode == "1")		// insert
 		{
-		    //fstream insertFile;
-		    //insertFile.open(fileName.c_str());
+		    cout << "Specify which byte to begin inserting (0 indexed)\n";
 		    
-		    FILE* insertFile;
-		    insertFile = fopen(fileName.c_str(), "wb");
+		    string s_byte;
+			bool valid = false;
+			
+			while(!valid)
+			{
+				try{
+					getline(cin, s_byte);
+					cout << "\n";
+				    FileEditor::byte = stoi(s_byte);
 
-		    cout << "Specify which byte to begin inserting\n";
-		    
-		    string byte;
-		    getline(cin, byte);
+					ifstream readFile;
+	    			readFile.open(fileName.c_str(), ios::in);
+					readFile.seekg(0, ios::end);
+					int length = readFile.tellg();
+					readFile.seekg(0, ios::beg);
+					
+					while(FileEditor::byte > length)
+					{
+						cout << "Byte specified is out of bounds\n";
+						getline(cin, s_byte);
+						cout << "\n";
+				    	FileEditor::byte = stoi(s_byte);
+					}
 
-		    try{
-		        int temp = stoi(byte);
-		        //insertFile.clear();
-		        //insertFile.seekg(temp);
+					readFile.close();
+					valid = true;
+				}
+				catch(const exception& e)
+				{
+				    cout << "Please enter a valid byte\n";
+				}
+			}
+			
+			ifstream readFile;
+		    readFile.open(fileName.c_str(), ios::in);
+			string insertData;
+			int i = 0;
+			readFile.seekg(0, ios::end);
+			int length = readFile.tellg();
+			readFile.seekg(0, ios::beg);
+			
+			if(length == FileEditor::byte)
+			{
+				cout << "match\n";
+				ofstream appFile;
+		    	appFile.open(fileName.c_str(), ios::app);
+				appFile << data;
+				appFile.close();
+			}
+			else
+			{
+				char c = readFile.get();
 
-		        fseek(insertFile, temp, SEEK_SET);
+				while(readFile.good())
+				{
+					if(i == FileEditor::byte)
+						insertData += data;
 
-		        
-		        /*
-		        insertFile.seekg(0, ios::end);
-		        int length = insertFile.tellg();
+					i++;
+					insertData += c;
+					c = readFile.get();
+				}
+				
+				ofstream insertFile;
+				insertFile.open(fileName.c_str());
+				insertFile << insertData;
+				insertFile.close();
+			}
 
-		        while(temp > length)
-		        {
-		            cout << "Value specified is longer than file length\n";
-		            cout << "Specify which byte to begin inserting\n";
-		    
-		            string byte;
-		            getline(cin, byte);
-		            temp = stoi(byte);
-		        }
-		        */
-		    }
-		    catch(const exception& e)
-		    {
-		        cout << "Please enter a valid byte\n\n";
-		    }
-
-		    /*
-		    insertFile.clear();
-		    insertFile.seekg(0, file.beg);
-		    */
-
-		    string test = "test test test";
-		
-			vector<string> testVec = {"test\n"};
-			test = testVec[0];
-
-		    fputs(test.c_str(), insertFile);
-		    //fseek(insertFile, 0, SEEK_SET);
-		    fclose(insertFile);
+			readFile.close();
+			
+			cout << "Data inserted into file\n\n";
 		    return;
 		}
 		else if(mode == "2")	// append
 		{
 			ofstream appFile;
 		    appFile.open(fileName.c_str(), ios::app);
-			appFile << data << "\n";
+			appFile << data;
 			appFile.close();
 	
 			cout << "Data appended to file\n\n";
@@ -218,7 +240,7 @@ void FileEditor::writeFile()
 		{
 			ofstream overFile;
 			overFile.open(fileName.c_str());
-			overFile << data << "\n";
+			overFile << data;
 			overFile.close();
 			
 			cout << "Data overwritten to file\n\n";

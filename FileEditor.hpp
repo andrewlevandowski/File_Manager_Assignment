@@ -1,6 +1,7 @@
 class FileEditor
 {
     private:
+        int byte;
         
         
     public:
