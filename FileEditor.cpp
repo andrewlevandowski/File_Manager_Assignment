@@ -1,12 +1,8 @@
 #include "FileEditor.hpp"
 #include <iostream>
 #include <string>
-//#include <regex>
 #include <sys/stat.h>
-#include <climits>
 #include <fstream>
-#include <stdio.h>
-#include <algorithm>
 #include <vector>
 
 using namespace std;
@@ -61,8 +57,8 @@ void FileEditor::createDir()
     cout << "Enter name of new directory\n";
 
     string newDir;
-    cin >> newDir;
-    cin.ignore(INT_MAX, '\n');      // flush out cin buffer
+    getline(cin, newDir);
+	cout << "\n";
 
     if(newDir == "0")       // input is 0, return to main menu
     {
@@ -86,8 +82,8 @@ void FileEditor::createFile()
     cout << "Enter new file name\n";
 
     string fileName;
-    cin >> fileName;
-    cin.ignore(INT_MAX, '\n');      // flush out cin buffer
+    getline(cin, fileName);
+	cout << "\n";
 
     if(fileName == "0")       // input is 0, return to main menu
     {
