@@ -39,7 +39,7 @@ void FileEditor::mainMenu()
         else if(selection == "2")
             createFile();
         else if(selection == "3")
-            cout << "3 selected\n";
+            readFile();
         else if(selection == "4")
             writeFile();
         else if(selection == "5")
@@ -96,6 +96,48 @@ void FileEditor::createFile()
     cout << "Regular file created\n\n";
 }
 
+void FileEditor::readFile()
+{
+    cout << "Enter file name to read from (0 for main menu)\n";
+
+    string fileName;
+    getline(cin, fileName);
+	cout << "\n";
+
+	if(fileName == "0")       // return to main menu
+        return;
+
+	FILE* check;
+	check = fopen(fileName.c_str(), "r");
+	
+	while(check == NULL)
+	{
+		cout << "File doesn't exist, try again\n";
+		getline(cin, fileName);
+		cout << "\n";
+
+        if(fileName == "0")       // return to main menu
+            return;
+
+		check = fopen(fileName.c_str(), "r");
+	}
+
+	fclose(check);
+
+    ifstream inputfile(fileName);
+	string line; 
+
+    cout << "File data:\n";
+	
+	while(getline(inputfile, line))
+	{
+		cout << line << endl;
+	}
+
+	inputfile.close();
+    cout << "\n";
+}
+
 void FileEditor::writeFile()
 {
     cout << "Enter file name to write to (0 for main menu)\n";
@@ -115,6 +157,10 @@ void FileEditor::writeFile()
 		cout << "File doesn't exist, try again\n";
 		getline(cin, fileName);
 		cout << "\n";
+
+        if(fileName == "0")       // return to main menu
+            return;
+
 		check = fopen(fileName.c_str(), "r");
 	}
 
@@ -191,7 +237,6 @@ void FileEditor::writeFile()
 			
 			if(length == FileEditor::byte)
 			{
-				cout << "match\n";
 				ofstream appFile;
 		    	appFile.open(fileName.c_str(), ios::app);
 				appFile << data;
