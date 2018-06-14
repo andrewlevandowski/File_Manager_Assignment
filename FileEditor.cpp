@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <vector>
+#include <dirent.h>
 
 using namespace std;
 
@@ -43,14 +44,39 @@ void FileEditor::mainMenu()
         else if(selection == "4")
             writeFile();
         else if(selection == "5")
-            cout << "5 selected\n";
+            fileStatus();
         else if(selection == "6")
-            cout << "6 selected\n";
+            printListing();
         else
             cout << "Please enter a valid selection\n\n";
       }
     while(true);    
 }
+
+string FileEditor::fileExists(string fileName)
+{
+	if(fileName == "0")       // return to main menu
+        return "0";
+
+	FILE* check;
+	check = fopen(fileName.c_str(), "r");
+	
+	while(check == NULL)
+	{
+		cout << "File doesn't exist, try again\n";
+		getline(cin, fileName);
+		cout << "\n";
+
+        if(fileName == "0")       // return to main menu
+            return "0";
+
+		check = fopen(fileName.c_str(), "r");
+	}
+
+	fclose(check);
+    return fileName;
+}
+    
 
 void FileEditor::createDir()
 {
@@ -104,25 +130,10 @@ void FileEditor::readFile()
     getline(cin, fileName);
 	cout << "\n";
 
-	if(fileName == "0")       // return to main menu
+    fileName = fileExists(fileName);
+
+	if(fileName == "0")   // return to main menu
         return;
-
-	FILE* check;
-	check = fopen(fileName.c_str(), "r");
-	
-	while(check == NULL)
-	{
-		cout << "File doesn't exist, try again\n";
-		getline(cin, fileName);
-		cout << "\n";
-
-        if(fileName == "0")       // return to main menu
-            return;
-
-		check = fopen(fileName.c_str(), "r");
-	}
-
-	fclose(check);
 
     ifstream inputfile(fileName);
 	string line; 
@@ -146,25 +157,10 @@ void FileEditor::writeFile()
     getline(cin, fileName);
 	cout << "\n";
 
-	if(fileName == "0")       // return to main menu
+	fileName = fileExists(fileName);
+
+	if(fileName == "0")   // return to main menu
         return;
-
-	FILE* check;
-	check = fopen(fileName.c_str(), "r");
-	
-	while(check == NULL)
-	{
-		cout << "File doesn't exist, try again\n";
-		getline(cin, fileName);
-		cout << "\n";
-
-        if(fileName == "0")       // return to main menu
-            return;
-
-		check = fopen(fileName.c_str(), "r");
-	}
-
-	fclose(check);
 
 	cout << "Enter data to write to file (0 for main menu)\n";
 
@@ -290,6 +286,48 @@ void FileEditor::writeFile()
 		else
 			cout << "Please enter a valid mode\n";
 	}
+}
+
+void FileEditor::fileStatus()
+{
+    cout << "Enter file for status:\n";
+
+    string fileName;
+    getline(cin, fileName);
+	cout << "\n";
+
+    fileName = fileExists(fileName);
+
+	if(fileName == "0")   // return to main menu
+        return;
+
+    struct stat buf;
+	int status;
+	status = stat(fileName.c_str(), &buf);
+
+	cout << "File: " << fileName << "\t"
+	<< "Blocks: " << buf.st_blocks << "\t"
+	<< "IO Block: " << buf.st_blksize << "\n";
+	cout << "Size: " << buf.st_size << "\t"
+	<< "Device ID: " << buf.st_dev << "\t"
+	<< "I-Node: " << buf.st_ino << "\n";
+	cout << "Accessed: " << ctime(&buf.st_atime);
+	cout << "Modified: " << ctime(&buf.st_mtime);
+	cout << "Status Changed: " << ctime(&buf.st_ctime) << "\n";
+}
+
+void FileEditor::printListing()
+{
+    cout << "Contents of current working directory:\n";
+
+    DIR* dirp = opendir(".");       // current source directory
+	struct dirent* dp;
+
+	while ((dp = readdir(dirp)) != NULL)      // prints file names
+		cout << (dp->d_name) << "\n";
+
+    cout << "\n";
+	closedir(dirp);
 }
 
     
