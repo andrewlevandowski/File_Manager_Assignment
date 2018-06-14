@@ -107,17 +107,17 @@ void FileEditor::createFile()
 {
     cout << "Enter new file name\n";
 
-    string fileName;
-    getline(cin, fileName);
+    FileEditor::fileName = "";
+    getline(cin, FileEditor::fileName);
 	cout << "\n";
 
-    if(fileName == "0")       // input is 0, return to main menu
+    if(FileEditor::fileName == "0")       // input is 0, return to main menu
     {
         cout << "\n";
         return;
     }
     
-    ofstream file (fileName);
+    ofstream file (FileEditor::fileName);
     file.close();
     cout << "Regular file created\n\n";
 }
@@ -126,16 +126,16 @@ void FileEditor::readFile()
 {
     cout << "Enter file name to read from (0 for main menu)\n";
 
-    string fileName;
-    getline(cin, fileName);
+    FileEditor::fileName  = "";
+    getline(cin, FileEditor::fileName);
 	cout << "\n";
 
-    fileName = fileExists(fileName);
+    FileEditor::fileName = fileExists(FileEditor::fileName);
 
-	if(fileName == "0")   // return to main menu
+	if(FileEditor::fileName == "0")   // return to main menu
         return;
 
-    ifstream inputfile(fileName);
+    ifstream inputfile(FileEditor::fileName);
 	string line; 
 
     cout << "File data:\n";
@@ -153,13 +153,13 @@ void FileEditor::writeFile()
 {
     cout << "Enter file name to write to (0 for main menu)\n";
 
-    string fileName;
-    getline(cin, fileName);
+    FileEditor::fileName  = "";
+    getline(cin, FileEditor::fileName);
 	cout << "\n";
 
-	fileName = fileExists(fileName);
+	FileEditor::fileName = fileExists(FileEditor::fileName);
 
-	if(fileName == "0")   // return to main menu
+	if(FileEditor::fileName == "0")   // return to main menu
         return;
 
 	cout << "Enter data to write to file (0 for main menu)\n";
@@ -201,7 +201,7 @@ void FileEditor::writeFile()
 				    FileEditor::byte = stoi(s_byte);
 
 					ifstream readFile;
-	    			readFile.open(fileName.c_str(), ios::in);
+	    			readFile.open((FileEditor::fileName).c_str(), ios::in);
 					readFile.seekg(0, ios::end);
 					int length = readFile.tellg();
 					readFile.seekg(0, ios::beg);
@@ -224,7 +224,7 @@ void FileEditor::writeFile()
 			}
 			
 			ifstream readFile;
-		    readFile.open(fileName.c_str(), ios::in);
+		    readFile.open((FileEditor::fileName).c_str(), ios::in);
 			string insertData;
 			int i = 0;
 			readFile.seekg(0, ios::end);
@@ -234,7 +234,7 @@ void FileEditor::writeFile()
 			if(length == FileEditor::byte)
 			{
 				ofstream appFile;
-		    	appFile.open(fileName.c_str(), ios::app);
+		    	appFile.open((FileEditor::fileName).c_str(), ios::app);
 				appFile << data;
 				appFile.close();
 			}
@@ -253,7 +253,7 @@ void FileEditor::writeFile()
 				}
 				
 				ofstream insertFile;
-				insertFile.open(fileName.c_str());
+				insertFile.open((FileEditor::fileName).c_str());
 				insertFile << insertData;
 				insertFile.close();
 			}
@@ -266,7 +266,7 @@ void FileEditor::writeFile()
 		else if(mode == "2")	// append
 		{
 			ofstream appFile;
-		    appFile.open(fileName.c_str(), ios::app);
+		    appFile.open((FileEditor::fileName).c_str(), ios::app);
 			appFile << data;
 			appFile.close();
 	
@@ -276,7 +276,7 @@ void FileEditor::writeFile()
 		else if(mode == "3")	// overwrite
 		{
 			ofstream overFile;
-			overFile.open(fileName.c_str());
+			overFile.open((FileEditor::fileName).c_str());
 			overFile << data;
 			overFile.close();
 			
@@ -292,20 +292,20 @@ void FileEditor::fileStatus()
 {
     cout << "Enter file for status:\n";
 
-    string fileName;
-    getline(cin, fileName);
+    FileEditor::fileName  = "";
+    getline(cin, FileEditor::fileName);
 	cout << "\n";
 
-    fileName = fileExists(fileName);
+    FileEditor::fileName = fileExists(FileEditor::fileName);
 
-	if(fileName == "0")   // return to main menu
+	if(FileEditor::fileName == "0")   // return to main menu
         return;
 
     struct stat buf;
 	int status;
-	status = stat(fileName.c_str(), &buf);
+	status = stat((FileEditor::fileName).c_str(), &buf);
 
-	cout << "File: " << fileName << "\t"
+	cout << "File: " << FileEditor::fileName << "\t"
 	<< "Blocks: " << buf.st_blocks << "\t"
 	<< "IO Block: " << buf.st_blksize << "\n";
 	cout << "Size: " << buf.st_size << "\t"

@@ -6,6 +6,7 @@ class FileEditor
 {
     private:
         int byte;
+        string fileName;
         string fileExists(string fileName);
         void createDir();
         void createFile();
