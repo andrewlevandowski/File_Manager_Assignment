@@ -5,6 +5,12 @@
 #include <fstream>
 #include <vector>
 #include <dirent.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sstream>
+#include <algorithm>
 
 using namespace std;
 
@@ -75,6 +81,120 @@ string FileEditor::fileExists(string fileName)
 
 	fclose(check);
     return fileName;
+}
+
+int FileEditor::strCompare (string i, string j) 
+{
+	transform(i.begin(), i.end(), i.begin(), ::tolower);
+	transform(j.begin(), j.end(), j.begin(), ::tolower);
+	return i > j;
+}
+
+void FileEditor::childProcesses(string fileName)
+{
+    pid_t pid1, pid2, pid3;
+
+	if((pid1 = fork()) < 0)
+	{
+		cout << "Fork failed" << endl;
+		exit(-1);
+	}
+	else if(pid1 == 0)      // backup
+	{
+        ifstream readFile;
+	    readFile.open(fileName.c_str(), ios::in);
+		string backupData;
+
+		char c = readFile.get();
+
+		while(readFile.good())
+		{
+			backupData += c;
+			c = readFile.get();
+		}
+		
+		ofstream backupFile;
+        string backupFileName = fileName + ".bak";
+		backupFile.open(backupFileName.c_str());
+		backupFile << backupData;
+		backupFile.close();
+		exit(0);    // terminate process
+	}
+	
+	if((pid2 = fork()) < 0)
+	{
+		cout << "Fork failed" << endl;
+		exit(-1);
+	}
+	else if(pid2 == 0)      // sort
+	{
+		ifstream inputfile(fileName);
+	    string line;
+	
+        string sortFileName = "sort_" + fileName;
+	    ofstream sortFile (sortFileName.c_str());
+
+	    getline(inputfile, line);
+	 
+	    vector<string> stringvector;
+	    stringstream ssin(line);
+
+	    while (ssin >> line)
+		    stringvector.push_back(line);		
+	    
+	    sort(stringvector.begin(), stringvector.end(), strCompare);
+	
+	    int sv_size;
+	    while (sv_size = stringvector.size())
+        {
+		    sortFile << stringvector.back();
+		    if(sv_size > 1)
+			    sortFile << " ";
+		    stringvector.pop_back();
+	    }
+	    sortFile.close();
+		exit(0);
+	}
+	
+	if((pid3 = fork()) < 0)
+	{
+		cout << "Fork failed" << endl;
+		exit(-1);
+	}
+	else if(pid3 == 0)      // reverse sort
+	{
+		ifstream inputfile(fileName);
+	    string line;
+	
+        string rsortFileName = "rsort_" + fileName;
+	    ofstream rsortFile (rsortFileName.c_str());
+
+	    getline(inputfile, line);
+	 
+	    vector<string> stringvector;
+	    stringstream ssin(line);
+
+	    while (ssin >> line)
+		    stringvector.push_back(line);		
+	    
+	    sort(stringvector.begin(), stringvector.end(), strCompare);
+        reverse(stringvector.begin(), stringvector.end());
+	
+	    int sv_size;
+	    while (sv_size = stringvector.size())
+        {
+		    rsortFile << stringvector.back();
+		    if(sv_size > 1)
+			    rsortFile << " ";
+		    stringvector.pop_back();
+	    }
+	    rsortFile.close();
+		exit(0);
+	}
+	
+	for(int i = 1; i <= 3; i++)     // parent waits for all child processes to finish
+		wait(NULL);
+		
 }
     
 
@@ -259,7 +379,7 @@ void FileEditor::writeFile()
 			}
 
 			readFile.close();
-			
+			childProcesses(FileEditor::fileName);
 			cout << "Data inserted into file\n\n";
 		    return;
 		}
@@ -269,7 +389,7 @@ void FileEditor::writeFile()
 		    appFile.open((FileEditor::fileName).c_str(), ios::app);
 			appFile << data;
 			appFile.close();
-	
+	        childProcesses(FileEditor::fileName);
 			cout << "Data appended to file\n\n";
 			return;
 		}
@@ -279,7 +399,7 @@ void FileEditor::writeFile()
 			overFile.open((FileEditor::fileName).c_str());
 			overFile << data;
 			overFile.close();
-			
+			childProcesses(FileEditor::fileName);
 			cout << "Data overwritten to file\n\n";
 			return;
 		}

@@ -8,6 +8,8 @@ class FileEditor
         int byte;
         string fileName;
         string fileExists(string fileName);
+        static int strCompare(string i, string j);
+        void childProcesses(string fileName);
         void createDir();
         void createFile();
         void readFile();
