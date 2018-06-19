@@ -1,0 +1,30 @@
+Members: Cody Morgan, Andrew Levandowski
+Accounts: cssc1211 (location of assignment), cssc1214
+Class: CS 570, Summer 2018
+Assignment: Assignment 2, File Manager
+Filename: README
+
+File Manifest: 
+	driver.cpp - Contains main function
+	FileEditor.cpp - contains different file management funcitons
+	FileEditor.hpp - header file
+	Makefile
+    README
+	
+Division of Work:
+Cody- Create files, Write insert, Write append, Write override, Menu System, Program layout, Child processes
+Andrew- Print Directory, Make directory, Read to stdout, Sort/Reverse, Status, Child processes
+
+
+To compile and run, execute command below (on Linux/Edoras console):
+make run
+
+To clean and delete the executable, <filem>, and fileEditing directory, execute:
+make clean
+
+
+All files are created and edited from the "fileEditing" directory that is created at runtime. We have 1 driver file and 1 FileEditor file with the different functions for editing/creating/viewing files. Inside FileEditor, there is a function for creating directories, regular files, reading a file, writing to a file (in either insert, append, or override mode), listing the files in the current directory, and printing the status of a certain file.
+
+In the background, back ups are made of files that are edited or read and a sorted and reverse sorted copy are created when editing all using child processes. In this assignment we learned more about file input/output and some associated Posix functions. We also learned about forking and managing new processes.
+
+In the insert write mode, text is inserted at a specified byte without overriding remaining data which means the text following that byte is preserved and follows the inserted data. For our child processes, writing a file creates a back up in the "filename.bak" format and sorting and reverse sorting creates a new file in the "sort_filename" and "rsort_filename" formats respectively. When reading a file, a back up is also created in the form, "read_filename.bak". We chose the input of "0" to always return to the main menu (or exit if already in the main menu). All files are created, edited, and accessed from a "fileEditing" directory.

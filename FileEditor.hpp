@@ -1,3 +1,12 @@
+/*
+    Members: Cody Morgan, Andrew Levandowski
+    Accounts: cssc1211 (location of assignment), cssc1214
+    Class: CS 570, Summer 2018
+    Assignment: Assignment 2, File Manager
+    Filename: FileEditor.hpp
+*/
+
+
 #include <string>
 
 using namespace std;
@@ -22,7 +31,6 @@ class FileEditor
         FileEditor();
         ~FileEditor();
         void mainMenu();
-        
 };
 
 

@@ -1,3 +1,12 @@
+/*
+    Members: Cody Morgan, Andrew Levandowski
+    Accounts: cssc1211 (location of assignment), cssc1214
+    Class: CS 570, Summer 2018
+    Assignment: Assignment 2, File Manager
+    Filename: FileEditor.cpp
+*/
+
+
 #include "FileEditor.hpp"
 #include <iostream>
 #include <string>
@@ -64,7 +73,7 @@ string FileEditor::fileExists(string fileName)
 	if(fileName == "0")       // return to main menu
         return "0";
 
-	FILE* check;
+	FILE* check;        // used to check if file exists
 	check = fopen(fileName.c_str(), "r");
 	
 	while(check == NULL)
@@ -83,7 +92,7 @@ string FileEditor::fileExists(string fileName)
     return fileName;
 }
 
-int FileEditor::strCompare (string i, string j) 
+int FileEditor::strCompare (string i, string j)     // for sorting
 {
 	transform(i.begin(), i.end(), i.begin(), ::tolower);
 	transform(j.begin(), j.end(), j.begin(), ::tolower);
@@ -96,7 +105,7 @@ void FileEditor::childProcesses(string fileName)
 
 	if((pid1 = fork()) < 0)
 	{
-		cout << "Fork failed" << endl;
+		cout << "Fork failed" << "\n";
 		exit(-1);
 	}
 	else if(pid1 == 0)      // backup
@@ -118,7 +127,7 @@ void FileEditor::childProcesses(string fileName)
 		backupFile.open(backupFileName.c_str());
 		backupFile << backupData;
 		backupFile.close();
-		exit(0);    // terminate process
+		exit(0);
 	}
 	
 	if((pid2 = fork()) < 0)
@@ -194,9 +203,7 @@ void FileEditor::childProcesses(string fileName)
 	
 	for(int i = 1; i <= 3; i++)     // parent waits for all child processes to finish
 		wait(NULL);
-		
 }
-    
 
 void FileEditor::createDir()
 {
@@ -206,7 +213,7 @@ void FileEditor::createDir()
     getline(cin, newDir);
 	cout << "\n";
 
-    if(newDir == "0")       // input is 0, return to main menu
+    if(newDir == "0")       // return to main menu
     {
         cout << "\n";
         return;
@@ -231,7 +238,7 @@ void FileEditor::createFile()
     getline(cin, FileEditor::fileName);
 	cout << "\n";
 
-    if(FileEditor::fileName == "0")       // input is 0, return to main menu
+    if(FileEditor::fileName == "0")       // return to main menu
     {
         cout << "\n";
         return;
@@ -250,23 +257,45 @@ void FileEditor::readFile()
     getline(cin, FileEditor::fileName);
 	cout << "\n";
 
-    FileEditor::fileName = fileExists(FileEditor::fileName);
+    FileEditor::fileName = fileExists(FileEditor::fileName);    // check if file exists
 
 	if(FileEditor::fileName == "0")   // return to main menu
         return;
 
-    ifstream inputfile(FileEditor::fileName);
+    ifstream inputFile(FileEditor::fileName);
 	string line; 
 
     cout << "File data:\n";
 	
-	while(getline(inputfile, line))
-	{
-		cout << line << endl;
-	}
+	while(getline(inputFile, line))
+		cout << line << "\n";
 
-	inputfile.close();
     cout << "\n";
+    inputFile.close();
+
+    pid_t pid1;     // for child process backup file
+
+    if((pid1 = fork()) < 0)
+	{
+		cout << "Fork failed" << endl;
+		exit(-1);
+	}
+	else if(pid1 == 0)      // backup
+	{
+        ifstream inputFile(FileEditor::fileName, ios::in); 
+        ofstream backupFile;
+        string backupFileName = "read_" + fileName + ".bak";
+		backupFile.open(backupFileName.c_str());
+
+		while(getline(inputFile, line))
+		    backupFile << line << "\n";
+
+		backupFile.close();
+        inputFile.close();
+		exit(0);
+	}
+    
+    wait(NULL);     // parent waits for child process to finish
 }
 
 void FileEditor::writeFile()
@@ -277,7 +306,7 @@ void FileEditor::writeFile()
     getline(cin, FileEditor::fileName);
 	cout << "\n";
 
-	FileEditor::fileName = fileExists(FileEditor::fileName);
+	FileEditor::fileName = fileExists(FileEditor::fileName);    // check if file exists
 
 	if(FileEditor::fileName == "0")   // return to main menu
         return;
@@ -299,7 +328,7 @@ void FileEditor::writeFile()
 
     string mode;
     
-	while(mode != "0" || mode != "1" || mode != "2" || mode != "3")
+	while(mode != "0" || mode != "1" || mode != "2" || mode != "3")     // input verification
 	{
 		getline(cin, mode);
 		cout << "\n";
@@ -313,7 +342,7 @@ void FileEditor::writeFile()
 		    string s_byte;
 			bool valid = false;
 			
-			while(!valid)
+			while(!valid)   // checks if byte specified is a valid entry
 			{
 				try{
 					getline(cin, s_byte);
@@ -345,41 +374,41 @@ void FileEditor::writeFile()
 			
 			ifstream readFile;
 		    readFile.open((FileEditor::fileName).c_str(), ios::in);
-			string insertData;
-			int i = 0;
 			readFile.seekg(0, ios::end);
-			int length = readFile.tellg();
+			int length = readFile.tellg();      // length of file
 			readFile.seekg(0, ios::beg);
+            int i = 0;      // counter used for every character in file
+            string insertData;      // string that includes all previous and newly inserted chars
 			
-			if(length == FileEditor::byte)
+			if(length == FileEditor::byte)      // user inserts at end, aka an append
 			{
 				ofstream appFile;
 		    	appFile.open((FileEditor::fileName).c_str(), ios::app);
 				appFile << data;
 				appFile.close();
 			}
-			else
+			else        // user inserts anywhere else in file
 			{
 				char c = readFile.get();
 
 				while(readFile.good())
 				{
-					if(i == FileEditor::byte)
+					if(i == FileEditor::byte)       // location of user specified insert
 						insertData += data;
 
 					i++;
-					insertData += c;
+					insertData += c;        // concat remaining previous chars
 					c = readFile.get();
 				}
 				
 				ofstream insertFile;
 				insertFile.open((FileEditor::fileName).c_str());
-				insertFile << insertData;
+				insertFile << insertData;       // put final string after insertion into file
 				insertFile.close();
 			}
 
 			readFile.close();
-			childProcesses(FileEditor::fileName);
+			childProcesses(FileEditor::fileName);       // create child processes as required
 			cout << "Data inserted into file\n\n";
 		    return;
 		}
@@ -389,7 +418,7 @@ void FileEditor::writeFile()
 		    appFile.open((FileEditor::fileName).c_str(), ios::app);
 			appFile << data;
 			appFile.close();
-	        childProcesses(FileEditor::fileName);
+	        childProcesses(FileEditor::fileName);   // create child processes as required
 			cout << "Data appended to file\n\n";
 			return;
 		}
@@ -399,7 +428,7 @@ void FileEditor::writeFile()
 			overFile.open((FileEditor::fileName).c_str());
 			overFile << data;
 			overFile.close();
-			childProcesses(FileEditor::fileName);
+			childProcesses(FileEditor::fileName);   // create child processes as required
 			cout << "Data overwritten to file\n\n";
 			return;
 		}
@@ -449,13 +478,3 @@ void FileEditor::printListing()
     cout << "\n";
 	closedir(dirp);
 }
-
-    
-
-    
-
-        
-
-
-
-
